@@ -1,12 +1,14 @@
-const BitView = function (buffer) {
-  this.buffer = buffer;
+function InMemoryBitCollectionStrategy(options) {
+  const { byteCount } = options;
+
+  this.buffer = new ArrayBuffer(byteCount);
   this.unit8 = new Uint8Array(this.buffer);
-};
+}
 
 /**
  * Returns the bit value at position 'index'.
  */
-BitView.prototype.get = function (index) {
+InMemoryBitCollectionStrategy.prototype.getIndex = function (index) {
   const value = this.unit8[index >> 3];
   const offset = index & 0x7;
   return (value >> (7 - offset)) & 1;
@@ -15,7 +17,7 @@ BitView.prototype.get = function (index) {
 /**
  * Sets the bit value at specified position 'index'.
  */
-BitView.prototype.set = function (index) {
+InMemoryBitCollectionStrategy.prototype.setIndex = function (index) {
   const offset = index & 0x7;
   this.unit8[index >> 3] |= 0x80 >> offset;
 };
@@ -23,7 +25,7 @@ BitView.prototype.set = function (index) {
 /**
  * Clears the bit at position 'index'.
  */
-BitView.prototype.clear = function (index) {
+InMemoryBitCollectionStrategy.prototype.clearIndex = function (index) {
   const offset = index & 0x7;
   this.unit8[index >> 3] &= ~(0x80 >> offset);
 };
@@ -31,15 +33,8 @@ BitView.prototype.clear = function (index) {
 /**
  * Returns the byte length of this array buffer.
  */
-BitView.prototype.length = function () {
+InMemoryBitCollectionStrategy.prototype.length = function () {
   return this.unit8.byteLength;
 };
 
-/**
- * Returns the array buffer.
- */
-BitView.prototype.view = function () {
-  return this.unit8;
-};
-
-module.exports = BitView;
+module.exports = InMemoryBitCollectionStrategy;

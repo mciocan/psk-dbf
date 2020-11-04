@@ -1,81 +1,100 @@
-const fs = require("fs");
-
-const BitView = require("./bit-view");
+const sha2 = require("./crypto-hash-functions/sha2");
 const linearFowlerNollVoJenkinsHashFunction = require("./hash-functions/linear-fowler–noll–vo-jenkins-hash-function");
+const InMemoryBitCollectionStrategy = require("./in-memory-bit-collection-strategy");
 
 const BITS_IN_BYTE = 8;
-const FALSE_POSITIVE_TOLERANCE = 0.000001;
 
 const DEFAULT_OPTIONS = {
-  // bytes count
-  n: null,
+  // bit count
+  bitCount: null,
   // k hash functions count
-  k: null,
-  // number of elements
-  m: null,
-  // function that returns the element's hash
+  hashFunctionCount: null,
+  // estimated number of elements from the collection
+  estimatedElementCount: null,
+  // allowed [robability of false positives
+  falsePositiveTolerance: 0.000001,
+
+  // default function that returns the element's hash
   hashFunction: linearFowlerNollVoJenkinsHashFunction,
-  // existing data (buffer)
-  existingData: null,
+
+  // crypto hash function that returns the element's hash
+  cryptoHashFunction: sha2,
+  // number of crypto hash functions to be used (will be used at first before the default hashFunction)
+  cryptoHashFunctionCount: 1,
+  // crypto hash function secret
+  cryptoSecret: "secret",
+
+  // strategy which interacts with the bit collection
+  BitCollectionStrategy: InMemoryBitCollectionStrategy,
 };
 
+/**
+ * Bloom filter implementation
+ * https://en.wikipedia.org/wiki/Bloom_filter
+ */
+
 function BloomFilter(options) {
-  this.options = { ...DEFAULT_OPTIONS, ...(options || { m: 1 }) };
+  this.options = { ...DEFAULT_OPTIONS, ...(options || { estimatedElementCount: 1 }) };
 
-  const { m, existingData } = this.options;
-  if (m) {
-    let { n, k } = this.options;
+  const { estimatedElementCount, falsePositiveTolerance, BitCollectionStrategy } = this.options;
+  let { bitCount, hashFunctionCount } = this.options;
 
-    if (!n) {
-      this.options.n = Math.ceil(-2 * m * Math.log(FALSE_POSITIVE_TOLERANCE));
-      n = this.options.n;
+  if (estimatedElementCount) {
+    if (!bitCount) {
+      bitCount = Math.ceil((-1 * estimatedElementCount * Math.log(falsePositiveTolerance)) / Math.pow(Math.log(2), 2));
     }
-    if (!k) {
-      this.options.k = Math.ceil(0.7 * (n / m));
+    if (!hashFunctionCount) {
+      hashFunctionCount = Math.ceil(Math.log(2) * (bitCount / estimatedElementCount));
     }
   }
 
-  const { n } = this.options;
-  const size = n > BITS_IN_BYTE ? Math.ceil(n / BITS_IN_BYTE) : 1;
-  this.options.size = size;
+  const byteCount = bitCount > BITS_IN_BYTE ? Math.ceil(bitCount / BITS_IN_BYTE) : 1;
 
-  this.bitView = existingData ? new BitView(existingData) : new BitView(new ArrayBuffer(size));
+  this.options = {
+    ...this.options,
+    bitCount,
+    hashFunctionCount,
+    byteCount,
+  };
+
+  this.bitCollectionStrategy = new BitCollectionStrategy(this.options);
 
   console.log(this.options);
 }
 
-BloomFilter.prototype.insert = function (data) {
-  const { bitView, options } = this;
-  const { k, hashFunction } = options;
+BloomFilter.prototype.calculateHash = function (data, index) {
+  const { options } = this;
+  const { hashFunction, cryptoHashFunction, cryptoHashFunctionCount } = options;
 
-  for (let index = 0; index < k; index++) {
-    const hash = hashFunction(data, index, this.options);
-    bitView.set(hash);
+  const mustUseCryptoHash = 0 < cryptoHashFunctionCount && index < cryptoHashFunctionCount;
+  const currentIndexHashFunction = mustUseCryptoHash ? cryptoHashFunction : hashFunction;
+
+  const hash = currentIndexHashFunction(data, index, options);
+  return hash;
+};
+
+BloomFilter.prototype.insert = function (data) {
+  const { bitCollectionStrategy, options } = this;
+  const { hashFunctionCount } = options;
+
+  for (let index = 0; index < hashFunctionCount; index++) {
+    const hash = this.calculateHash(data, index);
+    bitCollectionStrategy.setIndex(hash);
   }
 };
 
 BloomFilter.prototype.test = function (data) {
-  const { bitView, options } = this;
-  const { k, hashFunction } = options;
+  const { bitCollectionStrategy, options } = this;
+  const { hashFunctionCount } = options;
 
-  for (let index = 0; index < k; index++) {
-    const hash = hashFunction(data, index, this.options);
-    if (!bitView.get(hash)) {
+  for (let index = 0; index < hashFunctionCount; index++) {
+    const hash = this.calculateHash(data, index);
+    if (!bitCollectionStrategy.getIndex(hash)) {
       return false;
     }
   }
 
   return true;
-};
-
-BloomFilter.prototype.persist = function (path, done) {
-  const { bitView } = this;
-  fs.writeFile(path, Buffer.from(bitView.unit8), function (err) {
-    if (err) {
-      return done(err);
-    }
-    done(null, bitView.unit8.length);
-  });
 };
 
 module.exports = BloomFilter;
