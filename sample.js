@@ -1,0 +1,19 @@
+const BloomFilter = require("./src/bloom-filter");
+
+const bloomFilter = new BloomFilter({ estimatedElementCount: 100 });
+
+Array.from(Array(10).keys()).map((i) => {
+  const data = `element${i + 1}`;
+  console.log(`Adding: ${data}...`);
+  bloomFilter.insert(data);
+});
+
+const testElement = (element) => {
+  const result = bloomFilter.test(element);
+  console.log(`Element ${element}: ${result ? "possibly in set" : "definitely not in set"}`);
+};
+
+Array.from(Array(15).keys()).map((i) => {
+  const data = `element${i + 1}`;
+  testElement(data);
+});

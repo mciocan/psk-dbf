@@ -10,8 +10,8 @@ const DEFAULT_OPTIONS = {
   // k hash functions count
   hashFunctionCount: null,
   // estimated number of elements from the collection
-  estimatedElementCount: null,
-  // allowed [robability of false positives
+  estimatedElementCount: 0,
+  // allowed probability of false positives
   falsePositiveTolerance: 0.000001,
 
   // default function that returns the element's hash
@@ -20,7 +20,7 @@ const DEFAULT_OPTIONS = {
   // crypto hash function that returns the element's hash
   cryptoHashFunction: sha2,
   // number of crypto hash functions to be used (will be used at first before the default hashFunction)
-  cryptoHashFunctionCount: 1,
+  cryptoHashFunctionCount: 0,
   // crypto hash function secret
   cryptoSecret: "secret",
 
