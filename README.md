@@ -8,7 +8,7 @@ The implementation follows the official algorithm, which can be seen [here](http
 ## Creating a Bloom Filter
 
 ```js
-const BloomFilter = require("Axiologic/DynamicBloomFilter");
+const BloomFilter = require("DynamicBloomFilter");
 
 const bloomFilter = new BloomFilter({ estimatedElementCount: 100 });
 
