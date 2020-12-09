@@ -1,8 +1,21 @@
 function InMemoryBitCollectionStrategy(options) {
-  const { byteCount } = options;
+  let { byteCount } = options;
 
   this.buffer = new ArrayBuffer(byteCount);
   this.unit8 = new Uint8Array(this.buffer);
+
+  this.bloomFilterSerialisation = function(){
+    return {
+      byteCount,
+      unit8:this.unit8
+    }
+  }
+
+  this.loadBloomFilterSerialisation = function(serialisation){
+    byteCount   = serialisation.byteCount;
+    this.unit8  = serialisation.unit8;
+  }
+  this.buffer =  new ArrayBuffer(byteCount);
 }
 
 /**

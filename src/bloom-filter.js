@@ -57,9 +57,10 @@ function BloomFilter(options) {
     byteCount,
   };
 
-  this.bitCollectionStrategy = new BitCollectionStrategy(this.options);
-
-  console.log(this.options);
+  this.bitCollectionStrategy        = new BitCollectionStrategy(this.options);
+  this.bloomFilterSerialisation     = this.bitCollectionStrategy.bloomFilterSerialisation;
+  this.loadBloomFilterSerialisation = this.bitCollectionStrategy.loadBloomFilterSerialisation;
+  console.log("Configuring Bloom filter " + this.options);
 }
 
 BloomFilter.prototype.calculateHash = function (data, index) {
