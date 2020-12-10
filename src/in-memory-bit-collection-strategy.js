@@ -1,26 +1,22 @@
 function InMemoryBitCollectionStrategy(options) {
-    let { byteCount } = options;
+    let { byteCount, data } = options;
 
     this.buffer = new ArrayBuffer(byteCount);
     this.unit8 = new Uint8Array(this.buffer);
 
-    this.bloomFilterSerialisation = () => {
-        return {
-            byteCount,
-            unit8: this.unit8.toString(),
-        };
-    };
-
-    this.loadBloomFilterSerialisation = (serialisation) => {
-        const { byteCount, unit8 } = serialisation;
-        this.buffer = new ArrayBuffer(byteCount);
-        this.unit8 = new Uint8Array(this.buffer);
-
-        unit8.split(",").forEach((byteValue, idx) => {
+    if (data) {
+        data.split(",").forEach((byteValue, idx) => {
             this.unit8[idx] = parseInt(byteValue, 10);
         });
-    };
+    }
 }
+
+/**
+ * Returns the serialised bytes
+ */
+InMemoryBitCollectionStrategy.prototype.serialise = function () {
+    return this.unit8.toString();
+};
 
 /**
  * Returns the bit value at position 'index'.
