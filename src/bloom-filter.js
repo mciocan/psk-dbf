@@ -29,8 +29,8 @@ const DEFAULT_OPTIONS = {
 };
 
 /**
- * Bloom filter implementation
- * https://en.wikipedia.org/wiki/Bloom_filter
+ Bloom filter implementation
+ https://en.wikipedia.org/wiki/Bloom_filter
  */
 
 function BloomFilter(serialisation, options) {
@@ -48,7 +48,6 @@ function BloomFilter(serialisation, options) {
     const { data, ...filterOptions } = serialisationOptions;
     this.options = { ...this.options, ...filterOptions, ...(options || {}) };
     serialisationData = data;
-    console.log({ filterOptions, options });
   }
 
   const { estimatedElementCount, falsePositiveTolerance, BitCollectionStrategy } = this.options;
@@ -73,7 +72,6 @@ function BloomFilter(serialisation, options) {
   };
 
   this.bitCollectionStrategy = new BitCollectionStrategy({ ...this.options, data: serialisationData });
-  console.log("Configuring Bloom filter ", this.options);
 }
 
 BloomFilter.prototype.bloomFilterSerialisation = function () {

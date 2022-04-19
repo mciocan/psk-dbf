@@ -10,13 +10,13 @@ The implementation follows the official algorithm, which can be seen [here](http
 ```js
 const BloomFilter = require("DynamicBloomFilter");
 
-const bloomFilter = new BloomFilter({ estimatedElementCount: 100 });
+const filter = new BloomFilter({ estimatedElementCount: 100 });
 
-bloomFilter.insert("element 1");
-bloomFilter.insert("element 2");
+filter.insert("element 1");
+filter.insert("element 2");
 
-bloomFilter.test("element 1"); // returns true
-bloomFilter.test("element 3"); // returns false
+filter.test("element 1"); // returns true
+filter.test("element 3"); // returns false
 ```
 
 ## Configuring the Bloom Filter
