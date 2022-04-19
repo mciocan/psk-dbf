@@ -2,17 +2,17 @@ name: Tests
 
 on:
   push:
-    branches: '*'
+    branches: "*"
     paths:
-      - '**.js'
-      - '**.yml'
-      - 'package*'
+      - "**.js"
+      - "**.yml"
+      - "package*"
   pull_request:
-    branches: '*'
+    branches: "*"
     paths:
-      - '**.js'
-      - '**.yml'
-      - 'package*'
+      - "**.js"
+      - "**.yml"
+      - "package*"
 
 jobs:
   test:
@@ -21,7 +21,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 16.x ]
+        node-version: [16.x]
 
     steps:
       - name: Checkout repository
@@ -47,6 +47,9 @@ jobs:
       - name: NPM CI
         run: npm ci --no-optional
         if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
+
+      - name: Check coding style
+        run: npm run prettier-check
 
       - name: Run tests
         run: npm test
