@@ -1,13 +1,10 @@
 function InMemoryBitCollectionStrategy(options) {
   let { byteCount, data } = options;
 
-  this.buffer = new ArrayBuffer(byteCount);
-  this.unit8 = new Uint8Array(this.buffer);
-
   if (data) {
-    data.split(",").forEach((byteValue, idx) => {
-      this.unit8[idx] = parseInt(byteValue, 10);
-    });
+    this.unit8 = Buffer.from(data, "base64");
+  } else {
+    this.unit8 = new Uint8Array(new ArrayBuffer(byteCount));
   }
 }
 
@@ -15,7 +12,7 @@ function InMemoryBitCollectionStrategy(options) {
  * Returns the serialised bytes
  */
 InMemoryBitCollectionStrategy.prototype.serialise = function () {
-  return this.unit8.toString();
+  return Buffer.from(this.unit8).toString("base64");
 };
 
 /**
