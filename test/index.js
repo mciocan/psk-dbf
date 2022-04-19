@@ -140,6 +140,21 @@ describe("Dynamic bloom filter", () => {
       testFilter(importedFilter, randomData, filterElementsCount, 0);
     });
 
+    it("test option - cryptoHashFunctionCount", () => {
+      const { filter, importedFilter } = createFilterSetup(
+        {
+          estimatedElementCount: filterElementsCount,
+          cryptoHashFunctionCount: 2,
+        },
+        filterData
+      );
+      testFilter(filter, filterData, filterElementsCount, filterElementsCount);
+      testFilter(filter, randomData, filterElementsCount, 0);
+
+      testFilter(importedFilter, filterData, filterElementsCount, filterElementsCount);
+      testFilter(importedFilter, randomData, filterElementsCount, 0);
+    });
+
     it("complex filter setup", () => {
       const { filter, importedFilter } = createFilterSetup(
         {
