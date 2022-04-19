@@ -1,0 +1,52 @@
+name: Tests
+
+on:
+  push:
+    branches: '*'
+    paths:
+      - '**.js'
+      - '**.yml'
+      - 'package*'
+  pull_request:
+    branches: '*'
+    paths:
+      - '**.js'
+      - '**.yml'
+      - 'package*'
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Store node version variable
+        id: node
+        run: |
+          echo "::set-output name=version::$(node -v)"
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: node_modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package.json') }}-${{ steps.node.outputs.version }}
+
+      - name: NPM CI
+        run: npm ci --no-optional
+        if: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
+
+      - name: Run tests
+        run: npm test
