@@ -5,11 +5,10 @@
   "main": "index.js",
   "devDependencies": {
     "prettier": "^2.6.2"
-    "prettier": "^2.1.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "prettier-check": "prettier --check .",
+    "prettier-format": "prettier --write ."
   },
   "repository": {
     "type": "git",
