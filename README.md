@@ -37,15 +37,18 @@ The following options are available:
 | cryptoSecret            | "secret"                                                                                                                                                                                                                                                                                                                                                                                              | crypto hash function secret                                                                                                           |
 | BitCollectionStrategy   | InMemoryBitCollectionStrategy (defined in src/in-memory-bit-collection-strategy.js) - keeps the bit collection in memory and applies bit operations                                                                                                                                                                                                                                                   | strategy which interacts with the bit collection                                                                                      |
 
-
 ### hashFunction
+
 Needs to be a function that returns a positive number representing the bit position that will be set to 1. It accepts 3 arguments: (data, index, options):
+
 - data: the value that needs to be hashed
 - index: the index of the current k hash function, ranges [0, k)
 - options: the options object that is used by the BloomFilter
 
 ### BitCollectionStrategy
+
 Needs to be a function constructor that accepts an single parameters representing the option object that is used by the BloomFilter.
 The function must have 2 methods defined:
+
 - getIndex - function that receives an index: number and returns the value of the index's bit of the collection
 - setIndex - function that receives an index: number and sets the value of the index's bit of the collection to 1
