@@ -76,12 +76,14 @@ function BloomFilter(serialisation, options) {
 
 BloomFilter.prototype.bloomFilterSerialisation = function () {
   const {
-    options: { estimatedElementCount, falsePositiveTolerance },
+    options: { estimatedElementCount, falsePositiveTolerance, hashFunctionCount, bitCount },
     bitCollectionStrategy,
   } = this;
   const serialisation = {
     estimatedElementCount,
     falsePositiveTolerance,
+    hashFunctionCount,
+    bitCount,
     data: bitCollectionStrategy.serialise(),
   };
   return JSON.stringify(serialisation);
