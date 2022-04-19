@@ -1,11 +1,15 @@
 # Dynamic Bloom Filter
 
+![MIT license](https://img.shields.io/badge/License-MIT-blue?logo=github)
+![Tests](https://github.com/mciocan/psk-dbf/workflows/Tests/badge.svg)
+
+
 This package implements a bloom filter for a general type of usage, with some usefull defaults in place.
 The implementation follows the official algorithm, which can be seen [here](https://en.wikipedia.org/wiki/Bloom_filter).
 
 # Usage
 
-## Creating a Bloom Filter
+### Creating a Bloom Filter
 
 ```js
 const BloomFilter = require("DynamicBloomFilter");
